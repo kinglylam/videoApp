@@ -23,7 +23,7 @@ git clone https://github.com/kinglylam/videoApp.git
 
 2.  # Navigate to the project directory
 
-cd TrackingApp
+cd videoApp
 
 3. # Install dependencies: Using npm:
 

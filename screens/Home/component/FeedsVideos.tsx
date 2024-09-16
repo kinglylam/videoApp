@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -25,6 +25,31 @@ const HorizontalVideo: React.FC<HorizontalVideoProps> = ({
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<any>(null);
 
+  const bufferConfig = {
+    minBufferMs: 15000,
+    maxBufferMs: 30000,
+    bufferForPlaybackMs: 3000,
+    bufferForPlaybackAfterRebufferMs: 5000,
+  };
+
+  useEffect(() => {
+    const loadVideo = async () => {
+      try {
+        await videoRef.current?.loadAsync(
+          { uri: videoUrl },
+          { shouldPlay: false, isMuted: false },
+          false
+        );
+        setLoading(false); // Video is loaded
+        await videoRef.current?.playAsync(); // Start playing after preload
+      } catch (error) {
+        console.log("Error loading video:", error);
+        setLoading(false);
+      }
+    };
+    loadVideo();
+  }, [videoUrl]);
+
   const handlePlaybackStatusUpdate = (playbackStatus: any) => {
     setStatus(playbackStatus);
     if (playbackStatus.didJustFinish) {
@@ -45,6 +70,11 @@ const HorizontalVideo: React.FC<HorizontalVideoProps> = ({
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           onLoad={() => setLoading(false)}
           onError={(error) => console.log("Error loading video:", error)}
+          progressUpdateIntervalMillis={500}
+          rate={1.5}
+          useNativeControls={false}
+          isLooping
+          isMuted={false}
         />
       </View>
     </TouchableWithoutFeedback>
